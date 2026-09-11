@@ -1286,16 +1286,16 @@ renderAll();
 
 /* ★世桜 追加（2026-09-11）: サーベイ送信後、Googleの口コミ投稿画面へご案内する。
    ・星の評価に関係なく全員に同じご案内（Googleポリシー＝評価による出し分けの禁止に従う）
-   ・3秒後に自動でGoogleの口コミ画面へ移動（ボタンですぐ移動も可・Tripadvisorのボタンに触れると自動移動は止まる）
+   ・自動では移動しない＝お客様がGoogleまたはTripadvisorのボタンを押したときだけ移動
    ・URL末尾に ?testthanks を付けると、送信なしでこの画面を確認できる（自動移動はしない） */
 var YSK_PLACE_ID = 'ChIJGdbXtBFnGWAR4clI5xbV7rY';
 var YSK_TA_URL = '';  // Tripadvisorの店舗ページ（未掲載の店は空＝ボタン非表示）
 var YSK_TXT = {
-  ja: { lead: 'よろしければ、口コミでも応援をお願いします', btn: 'Googleで口コミを書く', ta: 'Tripadvisorで口コミを書く', auto: '{n}秒後にGoogleの口コミ画面へ移動します' },
-  en: { lead: 'If you have a moment, we would love a review too!', btn: 'Write a Google review', ta: 'Review on Tripadvisor', auto: 'Taking you to Google reviews in {n}s' },
-  ko: { lead: '괜찮으시다면 리뷰도 부탁드립니다!', btn: 'Google 리뷰 쓰기', ta: 'Tripadvisor 리뷰 쓰기', auto: '{n}초 후 Google 리뷰 화면으로 이동합니다' },
-  zh: { lead: '如果方便的话，也请留下评论！', btn: '撰写Google评论', ta: '撰写Tripadvisor评论', auto: '{n}秒后将跳转到Google评论页面' },
-  vi: { lead: 'Nếu có thời gian, xin hãy để lại đánh giá!', btn: 'Viết đánh giá Google', ta: 'Đánh giá trên Tripadvisor', auto: 'Chuyển đến đánh giá Google sau {n} giây' }
+  ja: { lead: 'よろしければ、口コミでも応援をお願いします', btn: 'Googleで口コミを書く', ta: 'Tripadvisorで口コミを書く', or: 'または' },
+  en: { lead: 'If you have a moment, we would love a review too!', btn: 'Write a Google review', ta: 'Review on Tripadvisor', or: 'or' },
+  ko: { lead: '괜찮으시다면 리뷰도 부탁드립니다!', btn: 'Google 리뷰 쓰기', ta: 'Tripadvisor 리뷰 쓰기', or: '또는' },
+  zh: { lead: '如果方便的话，也请留下评论！', btn: '撰写Google评论', ta: '撰写Tripadvisor评论', or: '或' },
+  vi: { lead: 'Nếu có thời gian, xin hãy để lại đánh giá!', btn: 'Viết đánh giá Google', ta: 'Đánh giá trên Tripadvisor', or: 'hoặc' }
 };
 (function () {
   if (!YSK_PLACE_ID) return;
@@ -1311,31 +1311,19 @@ var YSK_TXT = {
       if (!ty) return;
       var box = document.createElement('div');
       box.id = 'yskReview';
-      box.style.cssText = 'margin-top:20px;text-align:center;opacity:0;transition:opacity .5s';
+      box.style.cssText = 'margin-top:20px;text-align:center;opacity:0;transition:opacity .35s';
+      /* 自動でGoogleへ移動しない＝お客様がボタンを押したときだけ移動する（2026-09-11 神田さんの実機確認）。
+         2つの選択肢があるのに勝手に片方へ進むのは体験としておかしい、のご指摘による。 */
       var taBtn = (typeof YSK_TA_URL !== 'undefined' && YSK_TA_URL)
-        ? '<div style="margin-top:10px"><a id="yskTa" href="' + YSK_TA_URL + '" style="display:inline-block;background:#34e0a1;color:#00291c;padding:11px 26px;border-radius:999px;font-weight:700;text-decoration:none;font-size:14px;box-shadow:0 3px 10px rgba(52,224,161,.35)">' + tx.ta + '</a></div>'
+        ? '<div style="font-size:11px;color:#a9a29b;margin:16px 0 12px;letter-spacing:.1em">' + tx.or + '</div>'
+          + '<a id="yskTa" href="' + YSK_TA_URL + '" style="display:inline-block;background:#fff;color:#00794f;border:2px solid #34e0a1;padding:11px 26px;border-radius:999px;font-weight:700;text-decoration:none;font-size:14px">' + tx.ta + '</a>'
         : '';
-      box.innerHTML = '<div style="font-size:14px;margin-bottom:10px;line-height:1.6">' + tx.lead + '</div>'
-        + '<a id="yskGo" href="' + YSK_URL + '" style="display:inline-block;background:#1a73e8;color:#fff;padding:14px 30px;border-radius:999px;font-weight:700;text-decoration:none;font-size:15px;box-shadow:0 4px 14px rgba(26,115,232,.35)">' + tx.btn + '</a>'
-        + taBtn
-        + '<div id="yskCnt" style="font-size:12px;color:#888;margin-top:10px"></div>';
+      box.innerHTML = '<div style="font-size:14px;margin-bottom:12px;line-height:1.6">' + tx.lead + '</div>'
+        + '<a id="yskGo" href="' + YSK_URL + '" style="display:inline-block;background:#1a73e8;color:#fff;padding:15px 34px;border-radius:999px;font-weight:700;text-decoration:none;font-size:15px;box-shadow:0 4px 14px rgba(26,115,232,.35)">' + tx.btn + '</a>'
+        + taBtn;
       ty.appendChild(box);
-      /* 出足を速く＝送信直後にすぐ選べる（2026-09-11 構築MTG＝待ち時間の短縮） */
-      setTimeout(function () { box.style.opacity = '1'; }, 200);
-      if (/[?&]testthanks/.test(location.search)) return;
-      var n = 3;
-      var iv = null;
-      var draw = function () { var c = document.getElementById('yskCnt'); if (c) c.textContent = tx.auto.replace('{n}', n); };
-      var stop = function () { if (iv) { clearInterval(iv); iv = null; } var c = document.getElementById('yskCnt'); if (c) c.textContent = ''; };
-      /* Tripadvisor等を選ぼうとした瞬間に自動移動を止める（取り合いにしない） */
-      box.addEventListener('click', stop, true);
-      box.addEventListener('touchstart', stop, true);
-      draw();
-      iv = setInterval(function () {
-        n--;
-        if (n <= 0) { stop(); location.href = YSK_URL; }
-        else draw();
-      }, 1000);
+      /* 送信した瞬間にボタンが見える（待たせない） */
+      setTimeout(function () { box.style.opacity = '1'; }, 60);
     } catch (e) {}
   };
   if (/[?&]testthanks/.test(location.search)) {
