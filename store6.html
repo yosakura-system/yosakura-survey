@@ -1289,6 +1289,7 @@ renderAll();
    ・3秒後に自動でGoogleの口コミ画面へ移動（ボタンですぐ移動も可・Tripadvisorのボタンに触れると自動移動は止まる）
    ・URL末尾に ?testthanks を付けると、送信なしでこの画面を確認できる（自動移動はしない） */
 var YSK_PLACE_ID = 'ChIJGdbXtBFnGWAR4clI5xbV7rY';
+var YSK_TA_URL = '';  // Tripadvisorの店舗ページ（未掲載の店は空＝ボタン非表示）
 var YSK_TXT = {
   ja: { lead: 'よろしければ、口コミでも応援をお願いします', btn: 'Googleで口コミを書く', ta: 'Tripadvisorで口コミを書く', auto: '{n}秒後にGoogleの口コミ画面へ移動します' },
   en: { lead: 'If you have a moment, we would love a review too!', btn: 'Write a Google review', ta: 'Review on Tripadvisor', auto: 'Taking you to Google reviews in {n}s' },
