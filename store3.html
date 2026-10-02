@@ -1303,6 +1303,9 @@ var YSK_TXT = {
   var orig = showThankyou;
   showThankyou = function () {
     orig();
+    /* ★完了画面の画像（QR＋Please read our Google reviews!）は出さない（2026-10-02 神田さん）＝スマホで開いた画面のQRは同じスマホで読めない。
+       口コミへは下のボタンで進む */
+    try { var la = document.getElementById('tyLogoAll'); if (la) { la.style.display = 'none'; la.removeAttribute('src'); } } catch (e0) {}
     try {
       if (document.getElementById('yskReview')) return;
       var lg = (typeof lang !== 'undefined' && YSK_TXT[lang]) ? lang : 'ja';
