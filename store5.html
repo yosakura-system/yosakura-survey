@@ -1316,6 +1316,10 @@ renderAll();
    ・URL末尾に ?testthanks を付けると、送信なしでこの画面を確認できる（自動移動はしない） */
 var YSK_PLACE_ID = 'ChIJlxlsrwNnGWAREPm0v4sFACo';
 var YSK_TA_URL = '';  // Tripadvisorの店舗ページ（未掲載の店は空＝ボタン非表示）
+/* ★口コミボタンが出るまでの秒（2026-10-02 神田さん）＝満足・大変満足は2秒、それ以外は30秒。
+   ⚠️星で待ち時間を変えるのは、Googleのポリシー「否定的な口コミを思いとどまらせない・良い口コミだけを選んで依頼しない」に触れるおそれがある。
+   元に戻すときは両方を 2000 にする（1行） */
+var YSK_SHOW_MS = { good: 2000, other: 30000 };
 var YSK_TXT = {
   ja: { lead: 'よろしければ、口コミでご感想をお聞かせください', btn: 'Googleで口コミを書く', ta: 'Tripadvisorで口コミを書く', or: 'または' },
   en: { lead: 'If you have a moment, we would love a review too!', btn: 'Write a Google review', ta: 'Review on Tripadvisor', or: 'or' },
@@ -1350,13 +1354,18 @@ var YSK_TXT = {
       box.innerHTML = '<div style="font-size:14px;margin-bottom:12px;line-height:1.6">' + tx.lead + '</div>'
         + '<a id="yskGo" href="' + YSK_URL + '" style="display:inline-block;background:#1a73e8;color:#fff;padding:15px 34px;border-radius:999px;font-weight:700;text-decoration:none;font-size:15px;box-shadow:0 4px 14px rgba(26,115,232,.35)">' + tx.btn + '</a>'
         + taBtn;
+      box.style.display = 'none';
       ty.appendChild(box);
-      /* 送信した瞬間にボタンが見える（待たせない） */
-      setTimeout(function () { box.style.opacity = '1'; }, 60);
+      /* 星の数で出るまでの時間を変える（YSK_SHOW_MS）。ボタンが出るまでは枠ごと隠す */
+      var good = false; try { good = (typeof isGoodRating === 'function') ? !!isGoodRating() : false; } catch (e1) {}
+      var wait = good ? YSK_SHOW_MS.good : YSK_SHOW_MS.other;
+      setTimeout(function () { box.style.display = ''; setTimeout(function () { box.style.opacity = '1'; }, 30); }, wait);
     } catch (e) {}
   };
   if (/[?&]testthanks/.test(location.search)) {
-    window.addEventListener('load', function () { setTimeout(function () { try { showThankyou(); } catch (e) {} }, 400); });
+    /* ?testthanks=5 のように星を付けると、その星で押した扱いで確認できる（送信はしない） */
+    var tm = location.search.match(/[?&]testthanks=([1-5])/);
+    window.addEventListener('load', function () { setTimeout(function () { try { if (tm && typeof answers !== 'undefined') answers.rating = tm[1]; showThankyou(); } catch (e) {} }, 400); });
   }
 })();
 
