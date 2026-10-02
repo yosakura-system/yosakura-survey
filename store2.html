@@ -1293,7 +1293,7 @@ var YSK_TA_URL = 'https://www.tripadvisor.jp/Restaurant_Review-g14127623-d346054
 /* ★口コミボタンが出るまでの秒（2026-10-02 神田さん）＝満足・大変満足は2秒、それ以外は30秒。
    ⚠️星で待ち時間を変えるのは、Googleのポリシー「否定的な口コミを思いとどまらせない・良い口コミだけを選んで依頼しない」に触れるおそれがある。
    元に戻すときは両方を 2000 にする（1行） */
-var YSK_SHOW_MS = { good: 2000, other: 2000 };   // 2026-10-02 夕方＝時間差はやめて全員2秒（神田さん）
+var YSK_SHOW_MS = { good: 2000, other: 30000 };   // 2026-10-02 17時＝神田さんの決定で2秒／30秒に戻す
 var YSK_TXT = {
   ja: { lead: 'よろしければ、口コミでご感想をお聞かせください', btn: 'Googleで口コミを書く', ta: 'Tripadvisorで口コミを書く', or: 'または' },
   en: { lead: 'If you have a moment, we would love a review too!', btn: 'Write a Google review', ta: 'Review on Tripadvisor', or: 'or' },
