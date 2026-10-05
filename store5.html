@@ -1331,6 +1331,11 @@ var YSK_TXT = {
   ja: { lead: 'よろしければ、口コミでご感想をお聞かせください', btn: 'Googleで口コミを書く', ta: 'Tripadvisorで口コミを書く', or: 'または' },
   en: { lead: 'If you have a moment, we would love a review too!', btn: 'Write a Google review', ta: 'Review on Tripadvisor', or: 'or' },
   ko: { lead: '괜찮으시다면 리뷰도 부탁드립니다!', btn: 'Google 리뷰 쓰기', ta: 'Tripadvisor 리뷰 쓰기', or: '또는' },
+  /* ★中国語は簡体字（中国）と繁体字（台湾・香港）で別に持つ（2026-10-05）。
+     アンケート側が返す言語コードは ja / ko / zh-hans / zh-hant / vi / en。
+     ここのキーと一字でも違うと、その言語のお客様に日本語が出る（実際に中国・台湾・香港で起きていた） */
+  'zh-hans': { lead: '如果方便的话，也请留下评论！', btn: '撰写Google评论', ta: '撰写Tripadvisor评论', or: '或' },
+  'zh-hant': { lead: '如果方便的話，也請留下評論！', btn: '撰寫Google評論', ta: '撰寫Tripadvisor評論', or: '或' },
   zh: { lead: '如果方便的话，也请留下评论！', btn: '撰写Google评论', ta: '撰写Tripadvisor评论', or: '或' },
   vi: { lead: 'Nếu có thời gian, xin hãy để lại đánh giá!', btn: 'Viết đánh giá Google', ta: 'Đánh giá trên Tripadvisor', or: 'hoặc' }
 };
@@ -1351,7 +1356,15 @@ var YSK_TXT = {
     if (!YSK_SHOW_REVIEW) return;
     try {
       if (document.getElementById('yskReview')) return;
-      var lg = (typeof lang !== 'undefined' && YSK_TXT[lang]) ? lang : 'ja';
+      /* ★お客様が最初に選んだ言語のまま出す（2026-10-05）。
+         アンケート側は zh-hans / zh-hant のような形で返すので、そのままでも、頭が zh でも拾えるようにする。
+         どれにも当たらないときは日本語でなく英語（外国のお客様に日本語を出さない） */
+      var lc = 'en';
+      try { if (typeof lang !== 'undefined' && lang) lc = String(lang); } catch (eL) {}
+      var lg = YSK_TXT[lc] ? lc
+             : (YSK_TXT[lc.replace('_', '-')] ? lc.replace('_', '-')
+             : (lc.indexOf('zh') === 0 ? 'zh-hans'
+             : (YSK_TXT[lc.split('-')[0]] ? lc.split('-')[0] : 'en')));
       var tx = YSK_TXT[lg];
       var ty = document.getElementById('thankyou');
       if (!ty) return;
