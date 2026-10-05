@@ -1293,7 +1293,9 @@ var YSK_TA_URL = '';  // Tripadvisorの店舗ページ（未掲載の店は空�
 /* ★口コミボタンが出るまでの秒（2026-10-02 神田さん）＝満足・大変満足は2秒、それ以外は30秒。
    ⚠️星で待ち時間を変えるのは、Googleのポリシー「否定的な口コミを思いとどまらせない・良い口コミだけを選んで依頼しない」に触れるおそれがある。
    元に戻すときは両方を 2000 にする（1行） */
-var YSK_SHOW_MS = { good: 2000, other: 30000 };   // 2026-10-02 17時＝神田さんの決定で2秒／30秒に戻す
+var YSK_SHOW_MS = { good: 2000, other: 2000 };   /* 2026-10-05 常山さん＝評価にかかわらず全員2秒。
+   評価で出す／出さない・早い／遅いを分けない（Googleのポリシー「否定的な口コミを思いとどまらせない・良い口コミだけを選んで集めない」に沿う形）。
+   ここを両方とも同じ値にしておくこと。片方だけ変えると出し分けに戻る */
 var YSK_TXT = {
   ja: { lead: 'よろしければ、口コミでご感想をお聞かせください', btn: 'Googleで口コミを書く', ta: 'Tripadvisorで口コミを書く', or: 'または' },
   en: { lead: 'If you have a moment, we would love a review too!', btn: 'Write a Google review', ta: 'Review on Tripadvisor', or: 'or' },
@@ -1330,7 +1332,7 @@ var YSK_TXT = {
         + taBtn;
       box.style.display = 'none';
       ty.appendChild(box);
-      /* 星の数で出るまでの時間を変える（YSK_SHOW_MS）。ボタンが出るまでは枠ごと隠す */
+      /* 出るまでの時間（YSK_SHOW_MS）。2026-10-05 から全員同じ＝評価で分けない。ボタンが出るまでは枠ごと隠す */
       var good = false; try { good = (typeof isGoodRating === 'function') ? !!isGoodRating() : false; } catch (e1) {}
       var wait = good ? YSK_SHOW_MS.good : YSK_SHOW_MS.other;
       setTimeout(function () { box.style.display = ''; setTimeout(function () { box.style.opacity = '1'; }, 30); }, wait);
