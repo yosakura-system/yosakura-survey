@@ -1296,6 +1296,11 @@ var YSK_TA_URL = '';  // Tripadvisorの店舗ページ（未掲載の店は空�
 var YSK_SHOW_MS = { good: 2000, other: 2000 };   /* 2026-10-05 常山さん＝評価にかかわらず全員2秒。
    評価で出す／出さない・早い／遅いを分けない（Googleのポリシー「否定的な口コミを思いとどまらせない・良い口コミだけを選んで集めない」に沿う形）。
    ここを両方とも同じ値にしておくこと。片方だけ変えると出し分けに戻る */
+/* ★サーベイのあとに口コミのご案内を出すか（2026-10-05 常山さん）
+   ＝富士山の2店（store5 牛カツ富士山／store6 鰻富士山）だけ出す。ほかの店はお礼画面までで終わり。
+   お礼画面のQR画像を出さないのは全店共通（2026-10-02 神田さん＝同じスマホでは読めないため）。
+   この店＝日本鰻世桜 浅草橋店 */
+var YSK_SHOW_REVIEW = false;
 var YSK_TXT = {
   ja: { lead: 'よろしければ、口コミでご感想をお聞かせください', btn: 'Googleで口コミを書く', ta: 'Tripadvisorで口コミを書く', or: 'または' },
   en: { lead: 'If you have a moment, we would love a review too!', btn: 'Write a Google review', ta: 'Review on Tripadvisor', or: 'or' },
@@ -1312,6 +1317,12 @@ var YSK_TXT = {
     /* ★完了画面の画像（QR＋Please read our Google reviews!）は出さない（2026-10-02 神田さん）＝スマホで開いた画面のQRは同じスマホで読めない。
        口コミへは下のボタンで進む */
     try { var la = document.getElementById('tyLogoAll'); if (la) { la.style.display = 'none'; la.removeAttribute('src'); } } catch (e0) {}
+    /* ★お礼画面のGoogle口コミQRの画像（tySurvey）も出さない（2026-10-05）。
+       元サイトの作りでは「星4・5のときだけ」この画像が出ていた＝評価による出し分けそのもの。
+       口コミへのご案内は、評価にかかわらず下のボタン1つに統一する。QRは同じスマホでは読めない（2026-10-02 神田さん） */
+    try { var sv = document.getElementById('tySurvey'); if (sv) { sv.style.display = 'none'; sv.removeAttribute('src'); } } catch (e0b) {}
+    /* ★口コミのご案内を出さない店は、ここで終わり（2026-10-05 常山さん）。QR画像を消す処理は上で済ませてある */
+    if (!YSK_SHOW_REVIEW) return;
     try {
       if (document.getElementById('yskReview')) return;
       var lg = (typeof lang !== 'undefined' && YSK_TXT[lang]) ? lang : 'ja';
